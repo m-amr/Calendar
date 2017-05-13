@@ -1,0 +1,33 @@
+body {
+    padding-top: 50px;
+}
+
+.starter-template {
+    padding: 40px 15px;
+    text-align: center;
+}
+
+.border{
+    border: solid black 1px;
+}
+
+.calendarRow{
+    height: 85px;
+}
+.calendarColumn {
+    width: 14.285%;
+}
+
+.disabled {
+    color: gainsboro;
+    cursor: not-allowed;
+    background-color: whitesmoke;
+}
+
+.redBackground{
+    background-color: red;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}

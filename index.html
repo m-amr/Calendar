@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Calendar</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body ng-app="calendarModule" ng-controller="mainCtl">
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Calendar</a>
+        </div>
+    </div>
+</div>
+
+<div class="container ng-cloak">
+    
+    <div class="row">
+
+        <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <label for="month">Month</label>
+            <select name="month" class="form-control" ng-options="key as value for (key , value) in months" ng-model="selectedMonth" ng-change="monthChanged()"></select>
+        </div>
+        <div class="form-group col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <label for="year">Year</label>
+            <select name="year" class="form-control" ng-options="value as value for value in years" ng-model="selectedYear" ng-change="yearChanged()"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="calendarColumn" ng-repeat="day in daysInWeek">{{day}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="calendarRow" ng-repeat="week in daysInMonth">
+                    <td class="calendarColumn"  ng-class="{'disabled': isDisabled(day)}" ng-repeat="day in week"  ng-mouseenter="isAddEventShown = true" ng-mouseleave="isAddEventShown = false">
+                        <div class="pull-right text-right">
+                            <div ng-if="isToday(day)">
+                                <b>
+                                    <span class="badge redBackground">
+                                        <span ng-if="day.day === 1">{{getDayMonthName(day)}}</span> {{day.day}}
+                                    </span>
+                                </b>
+                            </div>
+                            <div ng-if="!isToday(day)">
+                                <b><span ng-if="day.day === 1">{{getDayMonthName(day)}}</span> {{day.day}}</b>
+                            </div>
+
+                            <div>
+                                <div ng-if="day.eventList.length >0">
+                                    <a href="#" ng-click="showAllEventClicked(day)">
+                                        <b>
+                                            <span class="glyphicon glyphicon-calendar">({{day.eventList.length}})</span>
+                                        </b>
+                                    </a>
+                                </div>
+                            </div>
+                            <div ng-if="!isDisabled(day)">
+                                <div style=" vertical-align: bottom;" ng-show="isAddEventShown">
+                                    <a href="#" ng-click="addEventClicked(day)">
+                                        <span class="glyphicon glyphicon-plus-sign"></span>event
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-id" ng-controller="modalCtl">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Event </h4>
+                </div>
+                <div class="modal-body">
+                    <div ng-show="isAddEvent">
+                        <div class="form-group">
+                            <label for="">Event</label>
+                            <input type="text" ng-model="eventText" class="form-control" name="" id=""
+                                   placeholder="event text...">
+                        </div>
+                    </div>
+                    <div ng-show="!isAddEvent">
+                        <ul>
+                            <li ng-repeat="eventName in dayObject.eventList">
+                                {{eventName}}
+                                <a href="" style="color:red" class="pull-right" ng-click="deleteEventClicked($index)">
+                                    <span class="glyphicon glyphicon-minus-sign">remove</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button ng-show="isAddEvent" type="button" class="btn btn-primary" ng-click="saveEventClicked()">Add Event</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="javascripts/main.js"></script>
+</body>
+</html>
