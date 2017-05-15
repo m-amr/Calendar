@@ -108,7 +108,7 @@
                     </div>
                     <div ng-show="!isAddEvent">
                         <ul>
-                            <li ng-repeat="eventName in dayObject.eventList">
+                            <li ng-repeat="eventName in dayObject.eventList track by $index">
                                 {{eventName}}
                                 <a href="" style="color:red" class="pull-right" ng-click="deleteEventClicked($index)">
                                     <span class="glyphicon glyphicon-minus-sign">remove</span>
