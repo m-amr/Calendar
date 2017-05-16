@@ -12,25 +12,24 @@
 
     calendarModule.controller('mainCtl', ['$scope', '$rootScope', 'calenderService', function ($scope, $rootScope, calenderService) {
 
-        var date = new Date();
-        $scope.selectedMonth = '' + date.getMonth();
-        $scope.selectedYear = date.getFullYear();
-
-        $scope.daysInMonth = calenderService.getDaysInMonthInTableViewFormat(Number($scope.selectedMonth), Number($scope.selectedYear));
         $scope.daysInWeek = calenderService.getDaysInWeek(true);
         $scope.months = calenderService.getMonths();
         $scope.years = calenderService.getYears();
 
+        var currentDate = calenderService.getTodayDate();
+        updateScopeData(currentDate);
+        renderCalendar();
+
         $scope.isDisabled = function(dateObject){
-            return dateObject.month !== Number($scope.selectedMonth);
+            return dateObject.month !== $scope.selectedMonth;
         };
 
         $scope.getDayMonthName = function(day){
-            return calenderService.getMontName(day.month, true);
+            return calenderService.getMontName(day.month, true).label;
         };
 
         $scope.isToday = function(dateObject){
-            var todayDate = new Date();
+            var todayDate = calenderService.getTodayDate();
             return (
                 dateObject.day === todayDate.getDate()
                 && dateObject.month === todayDate.getMonth()
@@ -42,17 +41,47 @@
             $rootScope.$broadcast('show:events', dayObject)
         };
 
+        function updateScopeData(date){
+            $scope.selectedMonth = date.getMonth();
+            $scope.selectedYear = date.getFullYear();
+        }
+
+        function renderCalendar(){
+            $scope.daysInMonth = calenderService.getDaysInMonthInTableViewFormat($scope.selectedMonth, $scope.selectedYear);
+        }
+
         //events
         $scope.monthChanged = function () {
-            $scope.daysInMonth = calenderService.getDaysInMonthInTableViewFormat(Number($scope.selectedMonth), Number($scope.selectedYear));
+            renderCalendar();
         };
 
         $scope.yearChanged = function () {
-            $scope.daysInMonth = calenderService.getDaysInMonthInTableViewFormat(Number($scope.selectedMonth), Number($scope.selectedYear));
+            renderCalendar();
         };
 
         $scope.addEventClicked = function (dayObject) {
             $rootScope.$broadcast('add:event', dayObject)
+        };
+
+        $scope.todayClicked = function(){
+            var todayDate = calenderService.getTodayDate();
+            updateScopeData(todayDate);
+            renderCalendar();
+
+        };
+
+        $scope.nextMonthClicked = function(){
+            var nextMonthDate =  calenderService.getNextMonthDate($scope.selectedMonth, $scope.selectedYear);
+            updateScopeData(nextMonthDate);
+            renderCalendar();
+
+        };
+
+        $scope.previousMonthClicked = function(){
+            var previousMonthDate = calenderService.getPrevMonthDate($scope.selectedMonth, $scope.selectedYear);
+            updateScopeData(previousMonthDate);
+            renderCalendar();
+
         };
 
     }]);
@@ -105,10 +134,48 @@
     calendarModule.service('calenderService', ['eventService', function (eventService) {
         var DAYS_IN_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         var DAYS_IN_WEEK_ALIAS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-            'October', 'November', 'December'];
 
-        var MONTHS_ALIAS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Nov', 'Dec'];
+        var MONTHS = [
+            {label: 'January', value: 0},
+            {label: 'February', value: 1},
+            {label: 'March', value: 2},
+            {label: 'April', value: 3},
+            {label: 'May', value: 4},
+            {label: 'June', value: 5},
+            {label: 'July', value: 6},
+            {label: 'August', value: 7},
+            {label: 'September', value: 8},
+            {label: 'October', value: 9},
+            {label: 'November', value: 10},
+            {label: 'December', value: 11}
+        ];
+
+        var MONTHS_ALIAS = [
+            {label: 'Jan', value: 0},
+            {label: 'Feb', value: 1},
+            {label: 'Mar', value: 2},
+            {label: 'Apr', value: 3},
+            {label: 'May', value: 4},
+            {label: 'Jun', value: 5},
+            {label: 'Jul', value: 6},
+            {label: 'Aug', value: 7},
+            {label: 'Sep', value: 8},
+            {label: 'Oct', value: 9},
+            {label: 'Nov', value: 10},
+            {label: 'Dec', value: 11}
+        ];
+
+        this.getTodayDate = function(){
+            return new Date();
+        };
+
+        this.getNextMonthDate = function(month, year){
+            return new Date(year, month+1, 1);
+        };
+
+        this.getPrevMonthDate = function(month, year){
+            return new Date(year, month-1, 1);
+        };
 
         this.getMontName = function(monthNumber, alias){
             if(alias){
@@ -186,8 +253,8 @@
             return alias ? DAYS_IN_WEEK_ALIAS : DAYS_IN_WEEK;
         };
 
-        this.getMonths = function () {
-            return MONTHS;
+        this.getMonths = function (alias) {
+            return alias? MONTHS_ALIAS: MONTHS;
         };
 
         this.getYears = function () {
