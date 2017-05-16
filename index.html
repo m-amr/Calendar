@@ -91,35 +91,51 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-id" ng-controller="modalCtl">
+    <div class="modal fade" id="modal-id" ng-controller="modalCtl"  tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Event </h4>
                 </div>
-                <div class="modal-body">
-                    <div ng-show="isAddEvent">
-                        <div class="form-group">
-                            <label for="">Event</label>
-                            <input type="text" ng-model="eventText" class="form-control" name="" id=""
-                                   placeholder="event text...">
+
+                <div ng-show="isAddEvent">
+                    <form novalidate name="eventForm">
+                        <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="">Event</label>
+                                    <input type="text" ng-model="eventText" class="form-control" name="eventName" id="eventName"
+                                           placeholder="event text..." required="">
+                                    <div ng-show="eventForm.$submitted || eventForm.eventName.$touched">
+                                        <p ng-show="eventForm.eventName.$error.required" class="error">You must enter event
+                                            name.</p>
+                                    </div>
+                                </div>
                         </div>
-                    </div>
-                    <div ng-show="!isAddEvent">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary"
+                                    ng-click="saveEventClicked()">Add Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div ng-show="!isAddEvent">
+                    <div class="modal-body">
                         <ul>
                             <li ng-repeat="eventName in dayObject.eventList track by $index">
                                 {{eventName}}
-                                <a href="" style="color:red" class="pull-right" ng-click="deleteEventClicked($index)">
+                                <a href="" style="color:red" class="pull-right"
+                                   ng-click="deleteEventClicked($index)">
                                     <span class="glyphicon glyphicon-minus-sign">remove</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button ng-show="isAddEvent" type="button" class="btn btn-primary" ng-click="saveEventClicked()">Add Event</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

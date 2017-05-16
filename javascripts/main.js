@@ -3,6 +3,10 @@
  */
 
 (function () {
+    //auto focus modal first input
+    $('body').on('shown.bs.modal', '#modal-id', function () {
+        $('input:visible:enabled:first', this).focus();
+    });
 
     var calendarModule = angular.module('calendarModule', []);
 
@@ -59,13 +63,15 @@
         $scope.dayObject = null;
         $scope.isAddEvent = false;
 
+
         $scope.$on('add:event', function (event, dayObject) {
+            $scope.resetEventForm();
             $scope.isAddEvent = true;
             $scope.eventText = '';
             $scope.dayObject = dayObject;
             modalElement.modal({
                 keyboard: true
-            })
+            });
         });
 
         $scope.$on('show:events', function (event, dayObject) {
@@ -78,9 +84,16 @@
             });
         });
 
+        $scope.resetEventForm = function(){
+            $scope.eventForm.$setPristine();
+            $scope.eventForm.$setUntouched();
+        };
+
         $scope.saveEventClicked = function () {
-            $scope.dayObject.eventList = eventService.addEventToDay($scope.dayObject, $scope.eventText);
-            modalElement.modal('toggle');
+            if($scope.eventForm.eventName.$valid){
+                $scope.dayObject.eventList = eventService.addEventToDay($scope.dayObject, $scope.eventText);
+                modalElement.modal('toggle');
+            }
         };
 
         $scope.deleteEventClicked = function(eventIndex){
